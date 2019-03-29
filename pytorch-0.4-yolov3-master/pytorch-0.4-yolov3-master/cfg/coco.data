@@ -1,0 +1,6 @@
+classes=32
+train=data\coco\trainvalno5k.txt
+valid=data\coco\test5k.txt
+names=data\coco\coco.names
+backup=backup/
+eval=coco

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/pytorch-0.4-yolov3-master/data/coco" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/pytorch-0.4-yolov3-master/data/coco_base" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/pytorch-0.4-yolov3-master/data/flickrlogos" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/pytorch-0.4-yolov3-master/data_loga1 - kopie/coco" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/pytorch-0.4-yolov3-master/data_loga1/coco" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/pytorch-0.4-yolov3-master/data_logo2/coco" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/pytorch-0.4-yolov3-master/datax/coco" vcs="Git" />
+  </component>
+</project>

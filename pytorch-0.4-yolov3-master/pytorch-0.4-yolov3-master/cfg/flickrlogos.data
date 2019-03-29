@@ -1,0 +1,6 @@
+classes=32
+train=data\flickrlogos\train_files.txt
+valid=data\flickrlogos\trainval_files.txt
+names=data\flickrlogos.names
+backup=backup/
+eval=coco
