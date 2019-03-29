@@ -1,0 +1,104 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#TENSORFLOW
+
+#zdrovoznění podle https://github.com/EdjeElectronics/TensorFlow-Object-Detection-API-Tutorial-Train-Multiple-Objects-Windows-10
+
+1)# upravit tensorflow1\models\research\object_detection\training\faster_rcnn_inception_v2_logo.config 
+  # řádek 9: num_classes: XXXX
+
+2)# upravit tensorflow1\models\research\object_detection\training\labelmap.pbtxt
+
+3)# vygenerovat TFrecords a vložit je do složky tensorflow1\models\research\object_detection\training # --set=train/valid/test
+  # pomocí tensorflow1\models\research\object_detection\tensorflow_object_detection_create_coco_tfrecord-master\
+
+python create_coco_tf_record.py 
+ --data_dir=C:\tensorflow1\models\research\object_detection\training\tensorflow_object_detection_create_coco_tfrecord-master\coco  
+ --set=train 
+ --output_filepath=C:\tensorflow1\models\research\object_detection\training\tensorflow_object_detection_create_coco_tfrecord-master\coco\output\train.record 
+ --shuffle_imgs=False
+ 
+ 4)# vytrořit následující strukturu v tensorflow1\models\research\object_detection\training\
+ 
+	-coco
+		-annotations   # hlavně train.json a test.json
+			--test.json
+			--train.json
+			--val.json
+			--all.json
+		-train
+			#zde vložit obrázky
+		-test
+			#zde vložit obrázky
+		-val
+			#zde vložit obrázky
+		
+
+5) python train.py --logtostderr --train_dir=training/train/ --pipeline_config_path=training/faster_rcnn_inception_v2_logo.config
+
+6) #doplnit místo XXXX podle posledního modelu trénování ze složky training/train/
+
+python export_inference_graph.py --input_type image_tensor --pipeline_config_path training/faster_rcnn_inception_v2_logo.config --trained_checkpoint_prefix training/train/model.ckpt-XXXX --output_directory inference_graph
+
+7) python Object_detection_images_custom.py --image-folder=training/coco/test --labelmap=training/labelmap.pbtxt --num-of-classes=32
+
+8) python eval.py --logtostderr --pipeline_config_path=training/faster_rcnn_inception_v2_logo.config --checkpoint_dir=training/train --eval_dir=eval/
+ 
+tensorboard --logdir=training/train --host=localhost
+ 
+#oprava chybějícího modulu nets
+set PYTHONPATH=C:\tensorflow1\models\research\slim;C:\tensorflow1\models\research;C:\tensorflow1\models;
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#PYTORCH
+
+COCO TO YOLO
+
+ 
+ 
+1) vygenerování labels + list souborů (train/test/valid) - pytorch-0.4-yolov3-master\pytorch-0.4-yolov3-master\data, 
+
+java -jar cocotoyolo.jar "coco/annotations/train.json" "coco/images/train/" "all" "labels/"
+
+2) nakopírovat obrázky, anotace a labely 
+
+3) upravit soubor coco.names  ve složce pytorch-0.4-yolov3-master\pytorch-0.4-yolov3-master\data -> seznam classes
+
+4) upravit coco.data v pytorch-0.4-yolov3-master\pytorch-0.4-yolov3-master\cfg -> odkaz na soubory s listem obrázků
+
+5) upravit yolov3-tiny.cfg -> 
+
+	řádek 127: filters=(classes + 5)*3
+	řádek 135: classes=x
+	řádek 171: filters=(classes + 5)*3 
+	řádek 177: classes=x
+
+6) training
+
+python train.py -d cfg/flickrlogos.data -c cfg/flickrlogos-tiny.cfg -w weights/test69.weights
+python train.py -d cfg/toplogo.data -c cfg/toplogo-tiny.cfg -w weights/test69.weights
+
+
+7) detecting
+
+   python detect.py -d data/flickrlogos.names -f data\\flickrlogos\\images\\test -c cfg/flickrlogos-tiny.cfg -w weights/flickrlogos.weights
+   python detect.py -d data/toplogo.names -f data\\toplogo\\images\\test -c cfg/toplogo-tiny.cfg -w weights/toplogo.weights
+
+8) evaluating
+
+   python mycocoeval.py -d data/flickrlogos.names -f data\\flickrlogos\\images\\test -a data/flickrlogos/annotations/test.json -c cfg/flickrlogos-tiny.cfg -w weights/flickrlogos.weights
+   python mycocoeval.py -d data/toplogo.names -f data\\toplogo\\images\\test -a data/toplogo/annotations/test.json -c cfg/toplogo-tiny.cfg -w weights/toplogo.weights
+
+výsledky na GeForce GTX 960M a i5-6300HQ (processor omezen na 70%)
+
+tensorflow prediction		=  0.3-0.4 sekund
+tensorflow train			= 0.5-0.6 sekund
+
+torch prediction 			= 0.13-0.2 sekund
+torch train 				= 0.12-0.14 sekund
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
